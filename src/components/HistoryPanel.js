@@ -91,7 +91,7 @@ const HistoryPanel = ({ history = [], maxItems = 3 }) => {
                     {attempt.colorPercentages.color2.label}: {attempt.colorPercentages.color2.percentage}%
                   </span>
                   {attempt.colorPercentages.distractor.percentage > 0 && (
-                    <span className="text-xs px-2 py-1 rounded bg-white border border-gray-200 border-dashed opacity-60">
+                    <span className="text-xs px-2 py-1 rounded bg-white border border-gray-200">
                       {attempt.colorPercentages.distractor.label}: {attempt.colorPercentages.distractor.percentage}%
                     </span>
                   )}

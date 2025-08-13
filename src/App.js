@@ -239,7 +239,6 @@ function App() {
               onChange={(value) => handleSliderChange('distractor', value)}
               label={colorPercentages.distractor.label}
               colorHex={`rgb(${colorPercentages.distractor.color.r}, ${colorPercentages.distractor.color.g}, ${colorPercentages.distractor.color.b})`}
-              isDistractor={true}
             />
             
             {/* White Shading */}
@@ -267,15 +266,15 @@ function App() {
             <div className="flex flex-wrap gap-2">
               <div className="flex items-center space-x-2">
                 <div className="w-4 h-4 rounded border border-gray-300" style={{ backgroundColor: `rgb(${colorPercentages.color1.color.r}, ${colorPercentages.color1.color.g}, ${colorPercentages.color1.color.b})` }}></div>
-                <span className="text-sm text-blue-700">{colorPercentages.color1.label} (Primary)</span>
+                <span className="text-sm text-blue-700">{colorPercentages.color1.label}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-4 h-4 rounded border border-gray-300" style={{ backgroundColor: `rgb(${colorPercentages.color2.color.r}, ${colorPercentages.color2.color.g}, ${colorPercentages.color2.color.b})` }}></div>
-                <span className="text-sm text-blue-700">{colorPercentages.color2.label} (Primary)</span>
+                <span className="text-sm text-blue-700">{colorPercentages.color2.label}</span>
               </div>
-              <div className="flex items-center space-x-2 opacity-60">
-                <div className="w-4 h-4 rounded border border-gray-300 border-dashed" style={{ backgroundColor: `rgb(${colorPercentages.distractor.color.r}, ${colorPercentages.distractor.color.g}, ${colorPercentages.distractor.color.b})` }}></div>
-                <span className="text-sm text-blue-700">{colorPercentages.distractor.label} (Distractor)</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded border border-gray-300" style={{ backgroundColor: `rgb(${colorPercentages.distractor.color.r}, ${colorPercentages.distractor.color.g}, ${colorPercentages.distractor.color.b})` }}></div>
+                <span className="text-sm text-blue-700">{colorPercentages.distractor.label}</span>
               </div>
             </div>
           </div>
@@ -322,10 +321,7 @@ function App() {
         {/* Footer */}
         <div className="text-center text-gray-500 text-sm">
           <p>
-            💡 Tip: Use the two primary colors to create the base hue, then adjust with white/black for shading!
-          </p>
-          <p className="mt-2">
-            The distractor color is there to test your color mixing skills - try to avoid using it!
+            💡 Tip: Mix the available colors to match the target color, then adjust with white/black for shading!
           </p>
         </div>
       </div>

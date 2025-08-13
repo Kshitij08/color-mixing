@@ -473,6 +473,16 @@ export function getColorHints(targetColor, mixedColor, colorPercentages) {
   return hints.length > 0 ? hints : ["You're very close!"];
 }
 
+// Helper function to shuffle array
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 // Generate color palette for a target color
 export function generateColorPalette(targetColor) {
   const { h, s, l } = rgbToHsl(targetColor.r, targetColor.g, targetColor.b);
@@ -493,25 +503,31 @@ export function generateColorPalette(targetColor) {
     const greenColor = availableColors.find(c => c.name === 'green');
     const redColor = availableColors.find(c => c.name === 'red');
     
-    return {
-      color1: {
+    const colors = shuffleArray([
+      {
         name: blueColor.name,
         color: blueColor.color,
         label: blueColor.label,
         percentage: 0
       },
-      color2: {
+      {
         name: greenColor.name,
         color: greenColor.color,
         label: greenColor.label,
         percentage: 0
       },
-      distractor: {
+      {
         name: redColor.name,
         color: redColor.color,
         label: redColor.label,
         percentage: 0
       }
+    ]);
+    
+    return {
+      color1: colors[0],
+      color2: colors[1],
+      distractor: colors[2]
     };
   }
   
@@ -521,25 +537,31 @@ export function generateColorPalette(targetColor) {
     const blueColor = availableColors.find(c => c.name === 'blue');
     const greenColor = availableColors.find(c => c.name === 'green');
     
-    return {
-      color1: {
+    const colors = shuffleArray([
+      {
         name: redColor.name,
         color: redColor.color,
         label: redColor.label,
         percentage: 0
       },
-      color2: {
+      {
         name: blueColor.name,
         color: blueColor.color,
         label: blueColor.label,
         percentage: 0
       },
-      distractor: {
+      {
         name: greenColor.name,
         color: greenColor.color,
         label: greenColor.label,
         percentage: 0
       }
+    ]);
+    
+    return {
+      color1: colors[0],
+      color2: colors[1],
+      distractor: colors[2]
     };
   }
   
@@ -551,25 +573,31 @@ export function generateColorPalette(targetColor) {
     const greenColor = availableColors.find(c => c.name === 'green');
     const redColor = availableColors.find(c => c.name === 'red');
     
-    return {
-      color1: {
+    const colors = shuffleArray([
+      {
         name: blueColor.name,
         color: blueColor.color,
         label: blueColor.label,
         percentage: 0
       },
-      color2: {
+      {
         name: greenColor.name,
         color: greenColor.color,
         label: greenColor.label,
         percentage: 0
       },
-      distractor: {
+      {
         name: redColor.name,
         color: redColor.color,
         label: redColor.label,
         percentage: 0
       }
+    ]);
+    
+    return {
+      color1: colors[0],
+      color2: colors[1],
+      distractor: colors[2]
     };
   }
   
@@ -579,25 +607,31 @@ export function generateColorPalette(targetColor) {
     const blueColor = availableColors.find(c => c.name === 'blue');
     const yellowColor = availableColors.find(c => c.name === 'yellow');
     
-    return {
-      color1: {
+    const colors = shuffleArray([
+      {
         name: redColor.name,
         color: redColor.color,
         label: redColor.label,
         percentage: 0
       },
-      color2: {
+      {
         name: blueColor.name,
         color: blueColor.color,
         label: blueColor.label,
         percentage: 0
       },
-      distractor: {
+      {
         name: yellowColor.name,
         color: yellowColor.color,
         label: yellowColor.label,
         percentage: 0
       }
+    ]);
+    
+    return {
+      color1: colors[0],
+      color2: colors[1],
+      distractor: colors[2]
     };
   }
   
@@ -607,25 +641,31 @@ export function generateColorPalette(targetColor) {
     const orangeColor = availableColors.find(c => c.name === 'orange');
     const blueColor = availableColors.find(c => c.name === 'blue');
     
-    return {
-      color1: {
+    const colors = shuffleArray([
+      {
         name: redColor.name,
         color: redColor.color,
         label: redColor.label,
         percentage: 0
       },
-      color2: {
+      {
         name: orangeColor.name,
         color: orangeColor.color,
         label: orangeColor.label,
         percentage: 0
       },
-      distractor: {
+      {
         name: blueColor.name,
         color: blueColor.color,
         label: blueColor.label,
         percentage: 0
       }
+    ]);
+    
+    return {
+      color1: colors[0],
+      color2: colors[1],
+      distractor: colors[2]
     };
   }
   
@@ -635,25 +675,31 @@ export function generateColorPalette(targetColor) {
     const greenColor = availableColors.find(c => c.name === 'green');
     const purpleColor = availableColors.find(c => c.name === 'purple');
     
-    return {
-      color1: {
+    const colors = shuffleArray([
+      {
         name: yellowColor.name,
         color: yellowColor.color,
         label: yellowColor.label,
         percentage: 0
       },
-      color2: {
+      {
         name: greenColor.name,
         color: greenColor.color,
         label: greenColor.label,
         percentage: 0
       },
-      distractor: {
+      {
         name: purpleColor.name,
         color: purpleColor.color,
         label: purpleColor.label,
         percentage: 0
       }
+    ]);
+    
+    return {
+      color1: colors[0],
+      color2: colors[1],
+      distractor: colors[2]
     };
   }
   
@@ -670,25 +716,31 @@ export function generateColorPalette(targetColor) {
   // Pick a distractor color (farthest from target)
   const distractor = colorDistances[colorDistances.length - 1];
   
-  return {
-    color1: {
+  const colors = shuffleArray([
+    {
       name: primaryColors[0].name,
       color: primaryColors[0].color,
       label: primaryColors[0].label,
       percentage: 0
     },
-    color2: {
+    {
       name: primaryColors[1].name,
       color: primaryColors[1].color,
       label: primaryColors[1].label,
       percentage: 0
     },
-    distractor: {
+    {
       name: distractor.name,
       color: distractor.color,
       label: distractor.label,
       percentage: 0
     }
+  ]);
+  
+  return {
+    color1: colors[0],
+    color2: colors[1],
+    distractor: colors[2]
   };
 }
 
