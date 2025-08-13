@@ -269,19 +269,6 @@ function App() {
             />
           </div>
           
-          {/* Debug Info */}
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <h3 className="font-semibold text-red-800 mb-2">🐛 Debug Info:</h3>
-            <div className="text-sm text-red-700">
-              <p>color1: {colorPercentages.color1.label} ({colorPercentages.color1.percentage}%)</p>
-              <p>color2: {colorPercentages.color2.label} ({colorPercentages.color2.percentage}%)</p>
-              <p>distractor: {colorPercentages.distractor.label} ({colorPercentages.distractor.percentage}%)</p>
-              <p>white: {colorPercentages.white}%</p>
-              <p>black: {colorPercentages.black}%</p>
-              <p>Mixed color: RGB({mixedColor.r}, {mixedColor.g}, {mixedColor.b})</p>
-            </div>
-          </div>
-          
           {/* Color Palette Info */}
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <h3 className="font-semibold text-blue-800 mb-2">🎨 Available Colors:</h3>
