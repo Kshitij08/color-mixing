@@ -45,7 +45,9 @@ function App() {
 
   // Update mixed color when percentages change
   useEffect(() => {
+    console.log("colorPercentages changed:", colorPercentages);
     const newMixedColor = mixColors(colorPercentages);
+    console.log("newMixedColor result:", newMixedColor);
     setMixedColor(newMixedColor);
   }, [colorPercentages]);
 
@@ -55,6 +57,8 @@ function App() {
     
     // Generate color palette for this target
     const palette = generateColorPalette(newTargetColor);
+    console.log("Generated palette:", palette);
+    
     setColorPercentages({
       color1: palette.color1,
       color2: palette.color2,
@@ -71,13 +75,18 @@ function App() {
   };
 
   const handleSliderChange = (colorType, value) => {
-    setColorPercentages(prev => ({
-      ...prev,
-      [colorType]: {
-        ...prev[colorType],
-        percentage: value
-      }
-    }));
+    console.log(`handleSliderChange: ${colorType} = ${value}`);
+    setColorPercentages(prev => {
+      const newState = {
+        ...prev,
+        [colorType]: {
+          ...prev[colorType],
+          percentage: value
+        }
+      };
+      console.log("New colorPercentages state:", newState);
+      return newState;
+    });
   };
 
   const handleShadingChange = (shadingType, value) => {
@@ -258,6 +267,19 @@ function App() {
               label="Black"
               colorHex="#000000"
             />
+          </div>
+          
+          {/* Debug Info */}
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <h3 className="font-semibold text-red-800 mb-2">🐛 Debug Info:</h3>
+            <div className="text-sm text-red-700">
+              <p>color1: {colorPercentages.color1.label} ({colorPercentages.color1.percentage}%)</p>
+              <p>color2: {colorPercentages.color2.label} ({colorPercentages.color2.percentage}%)</p>
+              <p>distractor: {colorPercentages.distractor.label} ({colorPercentages.distractor.percentage}%)</p>
+              <p>white: {colorPercentages.white}%</p>
+              <p>black: {colorPercentages.black}%</p>
+              <p>Mixed color: RGB({mixedColor.r}, {mixedColor.g}, {mixedColor.b})</p>
+            </div>
           </div>
           
           {/* Color Palette Info */}

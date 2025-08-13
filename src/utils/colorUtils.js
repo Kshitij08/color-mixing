@@ -275,7 +275,7 @@ export function mixColors(colorPercentages) {
   
   // Apply distractor color (subtle effect)
   if (distractor.percentage > 0) {
-    const factor = distractor.percentage / 100 * 0.2; // Reduced effect
+    const factor = distractor.percentage / 100; // Removed the 0.2 multiplier
     const colorRGB = distractor.color;
     
     mixedColor.r += colorRGB.r * factor;
@@ -300,40 +300,32 @@ export function mixColors(colorPercentages) {
     mixedColor.b *= (1 - blackFactor);
   }
   
-  return {
+  const result = {
     r: Math.round(Math.min(255, Math.max(0, mixedColor.r))),
     g: Math.round(Math.min(255, Math.max(0, mixedColor.g))),
     b: Math.round(Math.min(255, Math.max(0, mixedColor.b)))
   };
+  
+  return result;
 }
 
 // Test function to verify color mixing (for debugging)
 export function testColorMixing() {
   console.log("Testing color mixing...");
   
-  // Test the specific target color from the screenshot
-  const targetColor = { r: 24, g: 103, b: 155 }; // #18679b
-  const { h, s, l } = rgbToHsl(targetColor.r, targetColor.g, targetColor.b);
-  console.log("Target color #18679b:");
-  console.log("RGB:", targetColor);
-  console.log("HSL:", { h: Math.round(h), s: Math.round(s), l: Math.round(l) });
-  console.log("Hue classification:", h >= 160 && h <= 200 ? "TEAL" : h >= 240 && h <= 300 ? "PURPLE" : "OTHER");
+  // Simple test: Blue at 100% should give bright blue
+  console.log("\n=== Simple Blue Test ===");
+  const simpleBlueTest = mixColors({
+    color1: { name: 'blue', color: { r: 0, g: 0, b: 255 }, percentage: 100 },
+    color2: { name: 'red', color: { r: 255, g: 0, b: 0 }, percentage: 0 },
+    distractor: { name: 'yellow', color: { r: 255, g: 255, b: 0 }, percentage: 0 },
+    white: 0,
+    black: 0
+  });
   
-  // Test the magenta target color from the new screenshot
-  const magentaTarget = { r: 187, g: 49, b: 136 }; // #bb3188
-  const { h: h2, s: s2, l: l2 } = rgbToHsl(magentaTarget.r, magentaTarget.g, magentaTarget.b);
-  console.log("Target color #bb3188 (magenta):");
-  console.log("RGB:", magentaTarget);
-  console.log("HSL:", { h: Math.round(h2), s: Math.round(s2), l: Math.round(l2) });
-  console.log("Hue classification:", h2 >= 300 && h2 <= 360 ? "MAGENTA" : h2 >= 240 && h2 <= 300 ? "PURPLE" : "OTHER");
-  
-  // Test the blue target color from the latest screenshot
-  const blueTarget = { r: 76, g: 117, b: 172 }; // #4c75ac
-  const { h: h3, s: s3, l: l3 } = rgbToHsl(blueTarget.r, blueTarget.g, blueTarget.b);
-  console.log("Target color #4c75ac (blue):");
-  console.log("RGB:", blueTarget);
-  console.log("HSL:", { h: Math.round(h3), s: Math.round(s3), l: Math.round(l3) });
-  console.log("Hue classification:", h3 >= 210 && h3 <= 240 ? "BLUE" : h3 >= 240 && h3 <= 300 ? "PURPLE" : "OTHER");
+  console.log("Simple blue test result:", simpleBlueTest);
+  console.log("Expected: { r: 0, g: 0, b: 255 }");
+  console.log("Is correct?", simpleBlueTest.r === 0 && simpleBlueTest.g === 0 && simpleBlueTest.b === 255);
   
   // Test 100% orange
   const orangeTest = mixColors({
@@ -343,10 +335,10 @@ export function testColorMixing() {
     white: 0,
     black: 0
   });
-  
+
   console.log("100% Orange result:", orangeTest);
   console.log("Expected orange RGB:", BASE_COLORS.orange);
-  
+
   // Test 100% yellow
   const yellowTest = mixColors({
     color1: { name: 'yellow', color: BASE_COLORS.yellow, percentage: 100 },
@@ -355,10 +347,10 @@ export function testColorMixing() {
     white: 0,
     black: 0
   });
-  
+
   console.log("100% Yellow result:", yellowTest);
   console.log("Expected yellow RGB:", BASE_COLORS.yellow);
-  
+
   // Test teal mixing (blue + green)
   const tealTest = mixColors({
     color1: { name: 'blue', color: BASE_COLORS.blue, percentage: 50 },
@@ -367,10 +359,10 @@ export function testColorMixing() {
     white: 0,
     black: 0
   });
-  
+
   console.log("50% Blue + 50% Green result:", tealTest);
   console.log("This should create a bright teal color");
-  
+
   // Test with white to make it brighter
   const brightTealTest = mixColors({
     color1: { name: 'blue', color: BASE_COLORS.blue, percentage: 40 },
@@ -379,9 +371,59 @@ export function testColorMixing() {
     white: 20,
     black: 0
   });
-  
+
   console.log("40% Blue + 40% Green + 20% White result:", brightTealTest);
   console.log("This should create an even brighter teal color");
+
+  // Test the pink target color from the latest screenshot
+  const pinkTarget = { r: 240, g: 96, b: 130 }; // #f06082
+  const { h: h1, s: s1, l: l1 } = rgbToHsl(pinkTarget.r, pinkTarget.g, pinkTarget.b);
+  console.log("Target color #f06082 (pink):");
+  console.log("RGB:", pinkTarget);
+  console.log("HSL:", { h: Math.round(h1), s: Math.round(s1), l: Math.round(l1) });
+  console.log("Hue classification:", h1 >= 300 && h1 <= 360 ? "MAGENTA" : h1 >= 0 && h1 <= 30 ? "RED" : "OTHER");
+  
+  // Test the optimal mix calculation for pink
+  const pinkPalette = generateColorPalette(pinkTarget);
+  console.log("Generated palette for pink:", pinkPalette);
+  
+  const pinkOptimalMix = calculateOptimalMix(pinkTarget, pinkPalette);
+  console.log("Optimal mix for pink:", pinkOptimalMix);
+  
+  const pinkMixedColor = mixColors(pinkOptimalMix);
+  console.log("Mixed color result:", pinkMixedColor);
+  console.log("Expected pink:", pinkTarget);
+  
+  const pinkDeltaE = calculateDeltaE(pinkTarget, pinkMixedColor);
+  const pinkPercentage = calculatePercentageMatch(pinkDeltaE);
+  console.log("DeltaE:", pinkDeltaE, "Percentage:", pinkPercentage + "%");
+  
+  // Test the specific scenario from the image: Blue at 100%, others at 0%
+  console.log("\n=== Testing Blue at 100% scenario ===");
+  const blueTest = mixColors({
+    color1: { name: 'blue', color: BASE_COLORS.blue, percentage: 100 },
+    color2: { name: 'red', color: BASE_COLORS.red, percentage: 0 },
+    distractor: { name: 'yellow', color: BASE_COLORS.yellow, percentage: 0 },
+    white: 0,
+    black: 0
+  });
+  
+  console.log("Expected blue RGB:", BASE_COLORS.blue);
+  console.log("Actual result:", blueTest);
+  console.log("Should be bright blue, not dark blue!");
+  
+  // Test the exact scenario from the image
+  console.log("\n=== Testing exact image scenario ===");
+  const imageScenarioTest = mixColors({
+    color1: { name: 'yellow', color: BASE_COLORS.yellow, percentage: 0 },
+    color2: { name: 'red', color: BASE_COLORS.red, percentage: 0 },
+    distractor: { name: 'blue', color: BASE_COLORS.blue, percentage: 100 },
+    white: 0,
+    black: 0
+  });
+  
+  console.log("Image scenario test (Blue as distractor at 100%):", imageScenarioTest);
+  console.log("Expected: bright blue, not dark blue!");
 }
 
 // Convert RGB to hex string
@@ -771,7 +813,7 @@ export function getMixingTips(color1, color2) {
 
 // Calculate optimal color mix for a target color
 export function calculateOptimalMix(targetColor, colorPalette) {
-  const { color1, color2 } = colorPalette;
+  const { color1, color2, distractor } = colorPalette;
   
   // Convert target to LAB for better optimization
   const targetLab = rgbToLab(targetColor.r, targetColor.g, targetColor.b);
@@ -780,14 +822,14 @@ export function calculateOptimalMix(targetColor, colorPalette) {
   let bestMix = null;
   let bestDeltaE = Infinity;
   
-  // Try different combinations of the two primary colors with finer steps
-  for (let c1 = 0; c1 <= 100; c1 += 1) {
-    for (let c2 = 0; c2 <= 100; c2 += 1) {
+  // Phase 1: Try combinations of the two main colors
+  for (let c1 = 0; c1 <= 100; c1 += 2) {
+    for (let c2 = 0; c2 <= 100; c2 += 2) {
       // Calculate the base mix with just the two colors
       const baseMix = mixColors({
         color1: { ...color1, percentage: c1 },
         color2: { ...color2, percentage: c2 },
-        distractor: { ...colorPalette.distractor, percentage: 0 },
+        distractor: { ...distractor, percentage: 0 },
         white: 0,
         black: 0
       });
@@ -796,11 +838,11 @@ export function calculateOptimalMix(targetColor, colorPalette) {
       const baseDeltaE = calculateDeltaE(targetColor, baseMix);
       
       // Try adding white to lighten (more important with additive mixing)
-      for (let white = 0; white <= 100; white += 1) {
+      for (let white = 0; white <= 100; white += 5) {
         const lightMix = mixColors({
           color1: { ...color1, percentage: c1 },
           color2: { ...color2, percentage: c2 },
-          distractor: { ...colorPalette.distractor, percentage: 0 },
+          distractor: { ...distractor, percentage: 0 },
           white: white,
           black: 0
         });
@@ -812,19 +854,19 @@ export function calculateOptimalMix(targetColor, colorPalette) {
           bestMix = {
             color1: { ...color1, percentage: c1 },
             color2: { ...color2, percentage: c2 },
-            distractor: { ...colorPalette.distractor, percentage: 0 },
+            distractor: { ...distractor, percentage: 0 },
             white: white,
             black: 0
           };
         }
       }
       
-      // Try adding black to darken (important for darker colors like #18679b)
-      for (let black = 0; black <= 60; black += 1) {
+      // Try adding black to darken (important for darker colors)
+      for (let black = 0; black <= 60; black += 5) {
         const darkMix = mixColors({
           color1: { ...color1, percentage: c1 },
           color2: { ...color2, percentage: c2 },
-          distractor: { ...colorPalette.distractor, percentage: 0 },
+          distractor: { ...distractor, percentage: 0 },
           white: 0,
           black: black
         });
@@ -836,7 +878,7 @@ export function calculateOptimalMix(targetColor, colorPalette) {
           bestMix = {
             color1: { ...color1, percentage: c1 },
             color2: { ...color2, percentage: c2 },
-            distractor: { ...colorPalette.distractor, percentage: 0 },
+            distractor: { ...distractor, percentage: 0 },
             white: 0,
             black: black
           };
@@ -849,9 +891,35 @@ export function calculateOptimalMix(targetColor, colorPalette) {
         bestMix = {
           color1: { ...color1, percentage: c1 },
           color2: { ...color2, percentage: c2 },
-          distractor: { ...colorPalette.distractor, percentage: 0 },
+          distractor: { ...distractor, percentage: 0 },
           white: 0,
           black: 0
+        };
+      }
+    }
+  }
+  
+  // Phase 2: Try adding the third color to the best 2-color mix
+  if (bestMix) {
+    for (let c3 = 0; c3 <= 100; c3 += 5) {
+      const threeColorMix = mixColors({
+        color1: { ...color1, percentage: bestMix.color1.percentage },
+        color2: { ...color2, percentage: bestMix.color2.percentage },
+        distractor: { ...distractor, percentage: c3 },
+        white: bestMix.white,
+        black: bestMix.black
+      });
+      
+      const threeColorDeltaE = calculateDeltaE(targetColor, threeColorMix);
+      
+      if (threeColorDeltaE < bestDeltaE) {
+        bestDeltaE = threeColorDeltaE;
+        bestMix = {
+          color1: { ...color1, percentage: bestMix.color1.percentage },
+          color2: { ...color2, percentage: bestMix.color2.percentage },
+          distractor: { ...distractor, percentage: c3 },
+          white: bestMix.white,
+          black: bestMix.black
         };
       }
     }
@@ -868,26 +936,30 @@ export function calculateOptimalMix(targetColor, colorPalette) {
       for (let c2 = Math.max(0, bestMix.color2.percentage - fineTuneRange); 
            c2 <= Math.min(100, bestMix.color2.percentage + fineTuneRange); 
            c2 += fineTuneStep) {
-        
-        const fineMix = mixColors({
-          color1: { ...color1, percentage: c1 },
-          color2: { ...color2, percentage: c2 },
-          distractor: { ...colorPalette.distractor, percentage: 0 },
-          white: bestMix.white,
-          black: bestMix.black
-        });
-        
-        const fineDeltaE = calculateDeltaE(targetColor, fineMix);
-        
-        if (fineDeltaE < bestDeltaE) {
-          bestDeltaE = fineDeltaE;
-          bestMix = {
+        for (let c3 = Math.max(0, bestMix.distractor.percentage - fineTuneRange); 
+             c3 <= Math.min(100, bestMix.distractor.percentage + fineTuneRange); 
+             c3 += fineTuneStep) {
+          
+          const fineMix = mixColors({
             color1: { ...color1, percentage: c1 },
             color2: { ...color2, percentage: c2 },
-            distractor: { ...colorPalette.distractor, percentage: 0 },
+            distractor: { ...distractor, percentage: c3 },
             white: bestMix.white,
             black: bestMix.black
-          };
+          });
+          
+          const fineDeltaE = calculateDeltaE(targetColor, fineMix);
+          
+          if (fineDeltaE < bestDeltaE) {
+            bestDeltaE = fineDeltaE;
+            bestMix = {
+              color1: { ...color1, percentage: c1 },
+              color2: { ...color2, percentage: c2 },
+              distractor: { ...distractor, percentage: c3 },
+              white: bestMix.white,
+              black: bestMix.black
+            };
+          }
         }
       }
     }
@@ -903,7 +975,7 @@ export function calculateOptimalMix(targetColor, colorPalette) {
         const fineMix = mixColors({
           color1: { ...color1, percentage: bestMix.color1.percentage },
           color2: { ...color2, percentage: bestMix.color2.percentage },
-          distractor: { ...colorPalette.distractor, percentage: 0 },
+          distractor: { ...distractor, percentage: bestMix.distractor.percentage },
           white: white,
           black: black
         });
@@ -915,59 +987,13 @@ export function calculateOptimalMix(targetColor, colorPalette) {
           bestMix = {
             color1: { ...color1, percentage: bestMix.color1.percentage },
             color2: { ...color2, percentage: bestMix.color2.percentage },
-            distractor: { ...colorPalette.distractor, percentage: 0 },
+            distractor: { ...distractor, percentage: bestMix.distractor.percentage },
             white: white,
             black: black
           };
         }
       }
     }
-  }
-  
-  // If no good mix found, fall back to a simple approximation
-  if (!bestMix) {
-    // Simple fallback based on RGB values for additive mixing
-    const targetSum = targetColor.r + targetColor.g + targetColor.b;
-    
-    // Calculate percentages based on RGB ratios
-    let color1Percent = 0;
-    let color2Percent = 0;
-    
-    if (color1.name === 'blue') {
-      color1Percent = Math.min(100, (targetColor.b / 255) * 100);
-    } else if (color1.name === 'green') {
-      color1Percent = Math.min(100, (targetColor.g / 255) * 100);
-    } else if (color1.name === 'red') {
-      color1Percent = Math.min(100, (targetColor.r / 255) * 100);
-    } else if (color1.name === 'yellow') {
-      color1Percent = Math.min(100, ((targetColor.r + targetColor.g) / 510) * 100);
-    } else if (color1.name === 'purple') {
-      color1Percent = Math.min(100, ((targetColor.r + targetColor.b) / 510) * 100);
-    } else if (color1.name === 'orange') {
-      color1Percent = Math.min(100, ((targetColor.r * 0.7 + targetColor.g * 0.3) / 255) * 100);
-    }
-    
-    if (color2.name === 'blue') {
-      color2Percent = Math.min(100, (targetColor.b / 255) * 100);
-    } else if (color2.name === 'green') {
-      color2Percent = Math.min(100, (targetColor.g / 255) * 100);
-    } else if (color2.name === 'red') {
-      color2Percent = Math.min(100, (targetColor.r / 255) * 100);
-    } else if (color2.name === 'yellow') {
-      color2Percent = Math.min(100, ((targetColor.r + targetColor.g) / 510) * 100);
-    } else if (color2.name === 'purple') {
-      color2Percent = Math.min(100, ((targetColor.r + targetColor.b) / 510) * 100);
-    } else if (color2.name === 'orange') {
-      color2Percent = Math.min(100, ((targetColor.r * 0.7 + targetColor.g * 0.3) / 255) * 100);
-    }
-    
-    bestMix = {
-      color1: { ...color1, percentage: Math.round(color1Percent) },
-      color2: { ...color2, percentage: Math.round(color2Percent) },
-      distractor: { ...colorPalette.distractor, percentage: 0 },
-      white: 0,
-      black: 0
-    };
   }
   
   return bestMix;

@@ -90,6 +90,17 @@ const HelpModal = ({ isOpen, onClose, targetColor, colorPalette }) => {
                   </div>
                   <span className="text-lg font-bold text-blue-600">{optimalMix.color2.percentage}%</span>
                 </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div 
+                      className="w-6 h-6 rounded border border-gray-300"
+                      style={{ backgroundColor: `rgb(${optimalMix.distractor.color.r}, ${optimalMix.distractor.color.g}, ${optimalMix.distractor.color.b})` }}
+                    ></div>
+                    <span className="font-medium">{optimalMix.distractor.label}</span>
+                  </div>
+                  <span className="text-lg font-bold text-blue-600">{optimalMix.distractor.percentage}%</span>
+                </div>
               </div>
               
               <div className="space-y-3">
@@ -118,6 +129,7 @@ const HelpModal = ({ isOpen, onClose, targetColor, colorPalette }) => {
             <ol className="list-decimal list-inside space-y-1 text-sm text-blue-700">
               <li>Start with {optimalMix.color1.percentage}% {optimalMix.color1.label}</li>
               <li>Add {optimalMix.color2.percentage}% {optimalMix.color2.label}</li>
+              {optimalMix.distractor.percentage > 0 && <li>Add {optimalMix.distractor.percentage}% {optimalMix.distractor.label}</li>}
               {optimalMix.white > 0 && <li>Lighten with {optimalMix.white}% White</li>}
               {optimalMix.black > 0 && <li>Darken with {optimalMix.black}% Black</li>}
               <li>Mix thoroughly until uniform</li>
