@@ -25,8 +25,9 @@ const HistoryPanel = ({ history = [], maxItems = 3 }) => {
       
       <div className="space-y-4">
         {recentHistory.map((attempt, index) => {
-          const deltaE = calculateDeltaE(attempt.targetColor, attempt.mixedColor);
-          const percentage = calculatePercentageMatch(deltaE);
+          // Use stored values if available, otherwise calculate
+          const deltaE = attempt.deltaE || calculateDeltaE(attempt.targetColor, attempt.mixedColor);
+          const percentage = attempt.matchPercentage || calculatePercentageMatch(deltaE);
           const hexColor = rgbToHex(attempt.mixedColor.r, attempt.mixedColor.g, attempt.mixedColor.b);
           
           const getPercentageColor = (percent) => {
@@ -34,6 +35,13 @@ const HistoryPanel = ({ history = [], maxItems = 3 }) => {
             if (percent >= 75) return 'text-blue-600 bg-blue-100';
             if (percent >= 50) return 'text-yellow-600 bg-yellow-100';
             return 'text-red-600 bg-red-100';
+          };
+
+          const formatTime = (seconds) => {
+            if (seconds < 60) return `${seconds}s`;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}m ${remainingSeconds}s`;
           };
 
           return (
@@ -57,6 +65,11 @@ const HistoryPanel = ({ history = [], maxItems = 3 }) => {
                     <p className="text-xs text-gray-500">
                       {hexColor} • RGB({attempt.mixedColor.r}, {attempt.mixedColor.g}, {attempt.mixedColor.b})
                     </p>
+                    {attempt.timeTaken && (
+                      <p className="text-xs text-gray-400">
+                        ⏱️ {formatTime(attempt.timeTaken)}
+                      </p>
+                    )}
                   </div>
                   
                   <div className="text-right">

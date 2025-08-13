@@ -32,6 +32,9 @@ function App() {
   const [history, setHistory] = useState([]);
   const [attemptCount, setAttemptCount] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
+  
+  // State for time tracking
+  const [startTime, setStartTime] = useState(null);
 
   // Generate initial target color and color palette
   useEffect(() => {
@@ -62,6 +65,9 @@ function App() {
     
     setShowResults(false);
     setAttemptCount(prev => prev + 1);
+    
+    // Set start time for this challenge
+    setStartTime(Date.now());
   };
 
   const handleSliderChange = (colorType, value) => {
@@ -84,12 +90,23 @@ function App() {
   const handleMix = () => {
     setShowResults(true);
     
+    // Calculate time taken
+    const timeTaken = startTime ? Date.now() - startTime : 0;
+    const timeTakenSeconds = Math.round(timeTaken / 1000);
+    
+    // Calculate match percentage
+    const deltaE = calculateDeltaE(targetColor, mixedColor);
+    const matchPercentage = calculatePercentageMatch(deltaE);
+    
     // Add to history
     const newAttempt = {
       targetColor,
       mixedColor,
       colorPercentages: { ...colorPercentages },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      timeTaken: timeTakenSeconds,
+      matchPercentage: matchPercentage,
+      deltaE: deltaE
     };
     
     setHistory(prev => [...prev, newAttempt]);
@@ -107,6 +124,9 @@ function App() {
       });
     }
     setShowResults(false);
+    
+    // Reset start time for this attempt
+    setStartTime(Date.now());
   };
 
   const handleNewChallenge = () => {
@@ -148,6 +168,14 @@ function App() {
             <span>Challenge #{attemptCount}</span>
             <span>•</span>
             <span>Attempts: {history.length}</span>
+            {startTime && !showResults && (
+              <>
+                <span>•</span>
+                <span className="text-purple-600 font-semibold">
+                  ⏱️ {Math.round((Date.now() - startTime) / 1000)}s
+                </span>
+              </>
+            )}
           </div>
         </div>
 
@@ -283,6 +311,7 @@ function App() {
             targetColor={targetColor}
             mixedColor={mixedColor}
             colorPercentages={colorPercentages}
+            timeTaken={startTime ? Math.round((Date.now() - startTime) / 1000) : 0}
             isVisible={showResults}
           />
         )}

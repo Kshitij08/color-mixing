@@ -1,7 +1,7 @@
 import React from 'react';
 import { calculateDeltaE, calculatePercentageMatch, getFeedbackMessage, getColorHints, getMixingTips } from '../utils/colorUtils';
 
-const ResultDisplay = ({ targetColor, mixedColor, colorPercentages, isVisible = false }) => {
+const ResultDisplay = ({ targetColor, mixedColor, colorPercentages, timeTaken, isVisible = false }) => {
   if (!isVisible || !targetColor || !mixedColor) {
     return null;
   }
@@ -26,13 +26,20 @@ const ResultDisplay = ({ targetColor, mixedColor, colorPercentages, isVisible = 
     return 'text-red-600';
   };
 
+  const formatTime = (seconds) => {
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 space-y-4">
       <h3 className="text-xl font-bold text-gray-800 text-center">
         Mixing Results
       </h3>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Percentage Match */}
         <div className="text-center p-4 bg-gray-50 rounded-lg">
           <div className={`text-3xl font-bold ${getPercentageColor(percentage)}`}>
@@ -48,6 +55,16 @@ const ResultDisplay = ({ targetColor, mixedColor, colorPercentages, isVisible = 
           </div>
           <div className="text-sm text-gray-600">DeltaE</div>
         </div>
+        
+        {/* Time Taken */}
+        {timeTaken && (
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="text-2xl font-bold text-purple-600">
+              ⏱️ {formatTime(timeTaken)}
+            </div>
+            <div className="text-sm text-gray-600">Time</div>
+          </div>
+        )}
         
         {/* Feedback */}
         <div className="text-center p-4 bg-gray-50 rounded-lg">
