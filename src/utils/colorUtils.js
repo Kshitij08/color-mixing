@@ -424,6 +424,29 @@ export function testColorMixing() {
   
   console.log("Image scenario test (Blue as distractor at 100%):", imageScenarioTest);
   console.log("Expected: bright blue, not dark blue!");
+  
+  // Test the specific target color from the user's image
+  console.log("\n=== Testing user's target color ===");
+  const userTargetColor = { r: 234, g: 0, b: 129 }; // #ea0081
+  const { h: h2, s: s2, l: l2 } = rgbToHsl(userTargetColor.r, userTargetColor.g, userTargetColor.b);
+  console.log("User's target color #ea0081:");
+  console.log("RGB:", userTargetColor);
+  console.log("HSL:", { h: Math.round(h2), s: Math.round(s2), l: Math.round(l2) });
+  
+  const userPalette = generateColorPalette(userTargetColor);
+  console.log("Generated palette for user's target:", userPalette);
+  
+  const userOptimalMix = calculateOptimalMix(userTargetColor, userPalette);
+  console.log("Optimal mix for user's target:", userOptimalMix);
+  
+  const userMixedColor = mixColors(userOptimalMix);
+  console.log("Mixed color result:", userMixedColor);
+  console.log("Expected:", userTargetColor);
+  
+  const userDeltaE = calculateDeltaE(userTargetColor, userMixedColor);
+  const userPercentage = calculatePercentageMatch(userDeltaE);
+  console.log("DeltaE:", userDeltaE, "Percentage:", userPercentage + "%");
+  console.log("Should be better than 90%!");
 }
 
 // Convert RGB to hex string
@@ -822,112 +845,88 @@ export function calculateOptimalMix(targetColor, colorPalette) {
   let bestMix = null;
   let bestDeltaE = Infinity;
   
-  // Phase 1: Try combinations of the two main colors
-  for (let c1 = 0; c1 <= 100; c1 += 2) {
-    for (let c2 = 0; c2 <= 100; c2 += 2) {
-      // Calculate the base mix with just the two colors
-      const baseMix = mixColors({
-        color1: { ...color1, percentage: c1 },
-        color2: { ...color2, percentage: c2 },
-        distractor: { ...distractor, percentage: 0 },
-        white: 0,
-        black: 0
-      });
-      
-      // Calculate DeltaE for this base mix using LAB
-      const baseDeltaE = calculateDeltaE(targetColor, baseMix);
-      
-      // Try adding white to lighten (more important with additive mixing)
-      for (let white = 0; white <= 100; white += 5) {
-        const lightMix = mixColors({
+  // Phase 1: Coarse search with all three colors
+  for (let c1 = 0; c1 <= 100; c1 += 3) {
+    for (let c2 = 0; c2 <= 100; c2 += 3) {
+      for (let c3 = 0; c3 <= 100; c3 += 3) {
+        // Calculate the base mix with all three colors
+        const baseMix = mixColors({
           color1: { ...color1, percentage: c1 },
           color2: { ...color2, percentage: c2 },
-          distractor: { ...distractor, percentage: 0 },
-          white: white,
+          distractor: { ...distractor, percentage: c3 },
+          white: 0,
           black: 0
         });
         
-        const lightDeltaE = calculateDeltaE(targetColor, lightMix);
+        // Calculate DeltaE for this base mix using LAB
+        const baseDeltaE = calculateDeltaE(targetColor, baseMix);
         
-        if (lightDeltaE < bestDeltaE) {
-          bestDeltaE = lightDeltaE;
+        // Try adding white to lighten
+        for (let white = 0; white <= 100; white += 5) {
+          const lightMix = mixColors({
+            color1: { ...color1, percentage: c1 },
+            color2: { ...color2, percentage: c2 },
+            distractor: { ...distractor, percentage: c3 },
+            white: white,
+            black: 0
+          });
+          
+          const lightDeltaE = calculateDeltaE(targetColor, lightMix);
+          
+          if (lightDeltaE < bestDeltaE) {
+            bestDeltaE = lightDeltaE;
+            bestMix = {
+              color1: { ...color1, percentage: c1 },
+              color2: { ...color2, percentage: c2 },
+              distractor: { ...distractor, percentage: c3 },
+              white: white,
+              black: 0
+            };
+          }
+        }
+        
+        // Try adding black to darken
+        for (let black = 0; black <= 60; black += 5) {
+          const darkMix = mixColors({
+            color1: { ...color1, percentage: c1 },
+            color2: { ...color2, percentage: c2 },
+            distractor: { ...distractor, percentage: c3 },
+            white: 0,
+            black: black
+          });
+          
+          const darkDeltaE = calculateDeltaE(targetColor, darkMix);
+          
+          if (darkDeltaE < bestDeltaE) {
+            bestDeltaE = darkDeltaE;
+            bestMix = {
+              color1: { ...color1, percentage: c1 },
+              color2: { ...color2, percentage: c2 },
+              distractor: { ...distractor, percentage: c3 },
+              white: 0,
+              black: black
+            };
+          }
+        }
+        
+        // Also check the base mix without white/black
+        if (baseDeltaE < bestDeltaE) {
+          bestDeltaE = baseDeltaE;
           bestMix = {
             color1: { ...color1, percentage: c1 },
             color2: { ...color2, percentage: c2 },
-            distractor: { ...distractor, percentage: 0 },
-            white: white,
+            distractor: { ...distractor, percentage: c3 },
+            white: 0,
             black: 0
           };
         }
       }
-      
-      // Try adding black to darken (important for darker colors)
-      for (let black = 0; black <= 60; black += 5) {
-        const darkMix = mixColors({
-          color1: { ...color1, percentage: c1 },
-          color2: { ...color2, percentage: c2 },
-          distractor: { ...distractor, percentage: 0 },
-          white: 0,
-          black: black
-        });
-        
-        const darkDeltaE = calculateDeltaE(targetColor, darkMix);
-        
-        if (darkDeltaE < bestDeltaE) {
-          bestDeltaE = darkDeltaE;
-          bestMix = {
-            color1: { ...color1, percentage: c1 },
-            color2: { ...color2, percentage: c2 },
-            distractor: { ...distractor, percentage: 0 },
-            white: 0,
-            black: black
-          };
-        }
-      }
-      
-      // Also check the base mix without white/black
-      if (baseDeltaE < bestDeltaE) {
-        bestDeltaE = baseDeltaE;
-        bestMix = {
-          color1: { ...color1, percentage: c1 },
-          color2: { ...color2, percentage: c2 },
-          distractor: { ...distractor, percentage: 0 },
-          white: 0,
-          black: 0
-        };
-      }
     }
   }
   
-  // Phase 2: Try adding the third color to the best 2-color mix
+  // Phase 2: Fine-tune the best result with smaller increments
   if (bestMix) {
-    for (let c3 = 0; c3 <= 100; c3 += 5) {
-      const threeColorMix = mixColors({
-        color1: { ...color1, percentage: bestMix.color1.percentage },
-        color2: { ...color2, percentage: bestMix.color2.percentage },
-        distractor: { ...distractor, percentage: c3 },
-        white: bestMix.white,
-        black: bestMix.black
-      });
-      
-      const threeColorDeltaE = calculateDeltaE(targetColor, threeColorMix);
-      
-      if (threeColorDeltaE < bestDeltaE) {
-        bestDeltaE = threeColorDeltaE;
-        bestMix = {
-          color1: { ...color1, percentage: bestMix.color1.percentage },
-          color2: { ...color2, percentage: bestMix.color2.percentage },
-          distractor: { ...distractor, percentage: c3 },
-          white: bestMix.white,
-          black: bestMix.black
-        };
-      }
-    }
-  }
-  
-  // Fine-tune the best result with smaller increments
-  if (bestMix) {
-    const fineTuneRange = 10;
+    const fineTuneRange = 15;
     const fineTuneStep = 1;
     
     for (let c1 = Math.max(0, bestMix.color1.percentage - fineTuneRange); 
